@@ -7,7 +7,9 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import java.io.IOException
 
 private const val LAYOUT_PREFERENCES_NAME = "layout_preferences"
 
@@ -20,7 +22,14 @@ class SettingsDataStore(context: Context) {
         context.dataStore.edit {
             it[IS_LINEAR_LAYOUT_MANAGER] = isLinearLayoutManager
         }
-        val preferenceFlow: Flow<Boolean> = context.dataStore.data.map {
+        val preferenceFlow: Flow<Boolean> = context.dataStore.data.catch {
+            if (it is IOException) {
+                it.printStackTrace()
+            }
+            else {
+                throw it
+            }
+        }.map {
             it[IS_LINEAR_LAYOUT_MANAGER] ?: true
         }
     }
