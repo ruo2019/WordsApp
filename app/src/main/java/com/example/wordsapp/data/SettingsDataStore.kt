@@ -18,19 +18,19 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 private val IS_LINEAR_LAYOUT_MANAGER = booleanPreferencesKey("is_linear_layout_manager")
 
 class SettingsDataStore(context: Context) {
+    val preferenceFlow: Flow<Boolean> = context.dataStore.data.catch {
+        if (it is IOException) {
+            it.printStackTrace()
+        }
+        else {
+            throw it
+        }
+    }.map {
+        it[IS_LINEAR_LAYOUT_MANAGER] ?: true
+    }
     suspend fun saveLayoutToPreferencesStore(isLinearLayoutManager: Boolean, context: Context) {
         context.dataStore.edit {
             it[IS_LINEAR_LAYOUT_MANAGER] = isLinearLayoutManager
-        }
-        val preferenceFlow: Flow<Boolean> = context.dataStore.data.catch {
-            if (it is IOException) {
-                it.printStackTrace()
-            }
-            else {
-                throw it
-            }
-        }.map {
-            it[IS_LINEAR_LAYOUT_MANAGER] ?: true
         }
     }
 }

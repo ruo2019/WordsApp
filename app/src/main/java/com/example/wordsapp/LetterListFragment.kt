@@ -19,6 +19,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -62,8 +63,11 @@ class LetterListFragment : Fragment() {
         recyclerView = binding.recyclerView
         // Sets the LayoutManager of the recyclerview
         // On the first run of the app, it will be LinearLayoutManager
-        chooseLayout()
         SettingsDataStore = SettingsDataStore(requireContext())
+        SettingsDataStore.preferenceFlow.asLiveData().observe(viewLifecycleOwner) { value ->
+            isLinearLayoutManager = value
+            chooseLayout()
+        }
     }
 
     /**
